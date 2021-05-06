@@ -1,9 +1,33 @@
 import { useState } from "react";
 import "./styles.css";
 
-function search(arr1, query) {
-  // sarch function here;
-  return "result";
+function search(source, query, path = null) {
+  // search function here;
+  if (Array.isArray(source)) {
+    for (let i = 0; i < source.length; i++) {
+      const item = source[i];
+      const newPath = path + `[${i}]`;
+      let result = search(item, query, newPath);
+      if (result) {
+        return result;
+      } else {
+        continue;
+      }
+    }
+  } else if (typeof source === "object") {
+    for (let key in source) {
+      let newPath = path === null ? key : path + "." + key;
+      let result = search(source[key], query, newPath);
+      if (result) {
+        return result;
+      } else {
+        continue;
+      }
+    }
+  } else if (source === query) {
+    return path;
+  }
+  return null;
 }
 
 export default function App() {
@@ -24,7 +48,7 @@ export default function App() {
     }
   }
   `);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("Ibori");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,6 +60,7 @@ export default function App() {
       return;
     }
     const result = search(parsedSource, query);
+
     setResult(result);
   };
 
